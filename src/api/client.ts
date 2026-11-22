@@ -47,6 +47,15 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     throw new Error(errorMessage);
   }
 
+  if (responseData && responseData.nextCursor !== undefined) {
+    return {
+      ...responseData,
+      users: Array.isArray(responseData.data) ? responseData.data : responseData.users || [],
+      notes: Array.isArray(responseData.data) ? responseData.data : responseData.notes || [],
+      posts: Array.isArray(responseData.data) ? responseData.data : responseData.posts || [],
+    } as T;
+  }
+
   return (responseData && responseData.data !== undefined ? responseData.data : responseData) as T;
 }
 
