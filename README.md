@@ -118,10 +118,11 @@ npm run preview   # Previews production build locally
 The frontend provides an interactive verification interface for all backend requirements:
 
 ### A. Authentication & RBAC
-1. Navigate to `/register` to create a new user profile with interests.
-2. Navigate to `/login` to authenticate.
+1. Navigate to `/login` to authenticate.
+   - **Demo Accounts Card:** The login page includes a quick-fill demo card with 1-click login buttons for **Admin**, **User 1 (Alice)**, and **User 2 (Bob)** for fast evaluator testing.
    - **User Role:** Grants access to `/notes` and `/posts`. Restricts access to administrative endpoints (redirects to `/notes`).
-   - **Admin Role:** Logs in using seeded credentials (`admin@example.com` / `AdminPassword123!`), displaying administrative navigation pills: *Admin Users*, *Admin Notes*, and *Interests Report*.
+   - **Admin Role:** Logs in using administrative credentials (`admin@example.com` / `AdminPassword123!`), displaying administrative navigation pills: *Admin Users*, *Admin Notes*, and *Interests Report*.
+2. Navigate to `/register` to create a new user profile with interests.
 
 ### B. User Notes & Cursor Pagination
 1. Navigate to `/notes`.
