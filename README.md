@@ -1,165 +1,129 @@
 # Secure Note-Taking Application — Frontend Client
 
-A minimalist, high-performance React Single Page Application (SPA) hand-crafted for the Secure Note-Taking technical assessment. Built with TypeScript, Vite, React Router, and a single 20-line semantic stylesheet without relying on CLI generators, component libraries, or external state managers.
+A modern, responsive Single Page Application (SPA) built with React 18, TypeScript, and Vite. Engineered to provide an intuitive interface for secure note-taking, role-based access control, and real-time visualization of MongoDB aggregation pipelines.
 
 ---
 
-## 1. Architectural Principles & Constraints Compliance
+## Live Deployment & Demo Credentials
 
-This frontend was developed under strict problem statement directives:
-> *"DO NOT USE ANY TEMPLATES. DO NOT waste time improving the frontend. This is a backend task."*
+- **Live Frontend (Vercel):** *Deploying to Vercel*
+- **Live Backend API (Render):** [https://secure-note-taking-application-backend-3muw.onrender.com](https://secure-note-taking-application-backend-3muw.onrender.com)
+- **API Health Check:** [https://secure-note-taking-application-backend-3muw.onrender.com/api/health](https://secure-note-taking-application-backend-3muw.onrender.com/api/health)
 
-- **Zero Scaffolding Templates:** Built completely from scratch (`index.html`, `vite.config.ts`, `tsconfig.json`, `package.json` authored by hand). No `create-vite` or `create-react-app` opinionated bloat.
-- **Strict Dependency Whitelist:** Strictly restricted to 8 whitelisted packages:
-  - **Runtime (3):** `react`, `react-dom`, `react-router-dom`
-  - **Development (5):** `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`
-- **Zero Banned Libraries:**
-  - ❌ No CSS frameworks (Tailwind, Bootstrap, Bulma)
-  - ❌ No component libraries (MUI, Chakra, Radix, shadcn)
-  - ❌ No icon packs (Lucide, FontAwesome, React Icons)
-  - ❌ No HTTP clients (Axios) — uses native browser `fetch`
-  - ❌ No external state libraries (Redux, Zustand, MobX, TanStack Query) — uses native React Context
-- **Single 20-Line Semantic Stylesheet:** Hand-crafted in `src/styles.css` (well below the 60-line upper boundary). Pure native semantic HTML controls (`<form>`, `<table>`, `<nav>`, `<input>`, `<button>`, `<textarea>`).
+### Evaluation Accounts
 
----
+The login page (`/login`) includes quick-fill buttons for immediate evaluation:
 
-## 2. Dependency Audit Matrix
-
-| Package Name | Category | Version | Justification |
-|---|---|---|---|
-| `react` | Runtime | `^18.3.1` | Core UI rendering engine |
-| `react-dom` | Runtime | `^18.3.1` | DOM renderer for React |
-| `react-router-dom` | Runtime | `^6.28.0` | Client-side routing, navigation, and protected route gating |
-| `vite` | Dev | `^5.4.11` | Build toolchain, fast HMR dev server, Rollup bundler |
-| `@vitejs/plugin-react` | Dev | `^4.3.4` | Vite plugin for React Fast Refresh and JSX transformation |
-| `typescript` | Dev | `^5.6.3` | Type-safe static analysis and compilation |
-| `@types/react` | Dev | `^18.3.12` | TypeScript definitions for React |
-| `@types/react-dom` | Dev | `^18.3.1` | TypeScript definitions for React DOM |
+| Account | Email | Password | Role | Permissions & Capabilities |
+|---|---|---|---|---|
+| **System Admin** | `admin@example.com` | `AdminPassword123!` | `admin` | Full platform access: user management, global notes audit, interests report |
+| **User 1 (Alice)** | `user1@example.com` | `UserPassword123!` | `user` | Personal note creation/editing, viewing public feed, profile posts |
+| **User 2 (Bob)** | `user2@example.com` | `UserPassword123!` | `user` | Isolated personal notes, community posts authoring |
 
 ---
 
-## 3. Directory Structure
+## Key Features
+
+### 1. Secure Authentication & Role-Based Access Control (RBAC)
+- **JWT Session Persistence:** Secure client-side token storage with automatic `Bearer` token injection on all protected requests.
+- **Client Route Guards:** Protected routes automatically redirect unauthenticated users to `/login`. Non-admin users attempting to access `/admin/*` routes are gracefully redirected.
+- **Session Expiration Interceptor:** Global HTTP 401 interceptor automatically purges expired tokens and prompts for re-authentication without application crashes.
+
+### 2. Private Personal Notes Management
+- **Full CRUD:** Create, read, edit (via dedicated patch view), and delete notes.
+- **Cursor Pagination:** Infinite scroll / "Load More" cursor pagination based on MongoDB `_id` timestamps (`GET /api/notes?limit=10&after=<id>`), ensuring stable pagination without offset drift.
+- **Privacy Enforcement:** Notes are strictly private to the creator; users cannot access other users' personal notes.
+
+### 3. Community Posts & Public Profiles
+- **Public Feed:** Community feed accessible to all visitors. Authenticated users can publish posts bound to their user ID.
+- **Scenario 2 Aggregation View:** Clicking any post author opens their profile view (`/users/:id/posts`), powered by a single MongoDB `$lookup` pipeline joining user details and their recent posts in a single round-trip.
+
+### 4. Administrative Suite
+- **User Directory & Provisioning:** Searchable user roster with capability to provision both standard users and new administrators.
+- **Multi-Collection Cascade Deletion:** Deleting a user safely triggers atomic deletion across associated notes and posts.
+- **Platform-Wide Notes Audit:** Inspect all platform notes with an instant **Filter by Owner ID** feature.
+- **Scenario 1 Interests Aggregation Report:** Visualizes MongoDB aggregation grouping users by interest clusters with server-side pagination and real-time interest search.
+
+---
+
+## Technical Stack & Architecture
+
+| Layer | Technology | Rationale |
+|---|---|---|
+| **Core Framework** | React 18 + TypeScript | Strict static typing, concurrent rendering, and clean functional architecture |
+| **Bundler & Tooling** | Vite | Instant Hot Module Replacement (HMR) and optimized Rollup production builds |
+| **Routing** | React Router v6 | Declarative client-side routing, protected layouts, and dynamic URL params |
+| **Styling** | Semantic CSS | Clean, native HTML5 semantics (`<nav>`, `<main>`, `<table>`, `<form>`) with zero external CSS runtime overhead |
+| **HTTP Client** | Native Browser Fetch | Standardized request wrapper with automatic JSON serialization and unified error mapping |
+| **State Management** | React Context API | Lightweight auth state without heavy third-party state library overhead |
+
+---
+
+## Project Structure
 
 ```
 frontend/
-├── .env.example              # Environment variables template
-├── .gitignore                # Ignores node_modules, dist, .env, and non-README markdown
-├── index.html                # Hand-crafted HTML5 entry point
-├── package.json              # Strict whitelist-only dependencies
-├── tsconfig.json             # Strict TypeScript compiler options
-├── vite.config.ts            # Minimal Vite configuration (Port 5174)
+├── index.html                # Application entry HTML
+├── package.json              # Project dependencies and build scripts
+├── tsconfig.json             # Strict TypeScript configuration
+├── vite.config.ts            # Vite bundler configuration
+├── vercel.json               # SPA client-side routing rewrites for Vercel
 └── src/
-    ├── main.tsx              # DOM mounting and root provider wrapper
-    ├── App.tsx               # Route definitions and dynamic navigation header
-    ├── styles.css            # Single 20-line semantic stylesheet
-    ├── vite-env.d.ts         # TypeScript declarations for import.meta.env
+    ├── main.tsx              # DOM mounting and root provider hierarchy
+    ├── App.tsx               # Top-level route definitions and navigation header
+    ├── styles.css            # Semantic, responsive styling rules
     ├── api/
-    │   └── client.ts         # Native fetch wrapper (Bearer injection, 401 interceptor)
+    │   └── client.ts         # Centralized HTTP client (auth headers, error handling)
     ├── context/
-    │   └── AuthContext.tsx   # Native React Context (token persistence, role state)
+    │   └── AuthContext.tsx   # Authentication context provider and hooks
     ├── components/
-    │   └── ProtectedRoute.tsx # Route guard enforcing authentication and RBAC
+    │   └── ProtectedRoute.tsx # Route gating for authenticated and role-restricted views
     └── pages/
-        ├── Login.tsx         # Account authentication
-        ├── Register.tsx      # User registration with interests
-        ├── Notes.tsx         # Notes dashboard, creation, and cursor pagination
-        ├── NoteEdit.tsx      # Dedicated note updater via PATCH
-        ├── AdminUsers.tsx    # Admin users table, user provisioning, cascade deletion
-        ├── AdminNotes.tsx    # Global notes inspection with owner filter
-        ├── InterestsReport.tsx # Scenario 1 interests aggregation report
-        ├── Posts.tsx         # Public posts community feed
-        └── UserProfilePosts.tsx # Scenario 2 $lookup user profile & recent posts
+        ├── Login.tsx         # User authentication with demo account quick-fill
+        ├── Register.tsx      # User registration with interest tagging
+        ├── Notes.tsx         # Personal notes list and note creation dashboard
+        ├── NoteEdit.tsx      # Note modification view
+        ├── Posts.tsx         # Public community posts feed and post creation
+        ├── UserProfilePosts.tsx # Scenario 2 $lookup user profile & recent posts
+        ├── AdminUsers.tsx    # Admin user management and cascade deletion
+        ├── AdminNotes.tsx    # Admin platform-wide notes audit with owner filtering
+        └── InterestsReport.tsx # Scenario 1 interests aggregation report
 ```
 
 ---
 
-## 4. Environment Configuration
-
-Copy `.env.example` to `.env`:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Default Value | Description |
-|---|---|---|
-| `VITE_API_URL` | `http://localhost:3005/api` | Target URL of the backend Express REST API |
-
----
-
-## 5. Quickstart Guide
+## Local Setup & Development
 
 ### Prerequisites
 - Node.js $\ge$ 18.x
-- Backend REST API running on `http://localhost:3005` (with MongoDB active)
+- Backend API running on `http://localhost:3005` (or live Render URL)
 
-### Installation
+### 1. Installation
 ```bash
 cd frontend
 npm install
 ```
 
-### Development Server
+### 2. Configure Environment Variables
+Create a `.env` file in the `frontend` root:
+```bash
+cp .env.example .env
+```
+Default content:
+```env
+VITE_API_URL=http://localhost:3005/api
+```
+*(To point to production, set `VITE_API_URL=https://secure-note-taking-application-backend-3muw.onrender.com/api`)*
+
+### 3. Run Development Server
 ```bash
 npm run dev
 ```
-Starts the Vite dev server on **`http://localhost:5174`** (configured to avoid standard port 5173 collisions).
+The application will launch on **`http://localhost:5174`**.
 
-### Production Build & Preview
+### 4. Production Build
 ```bash
-npm run build     # Runs type checking (tsc) and generates production dist/
-npm run preview   # Previews production build locally
+npm run build
+npm run preview
 ```
-
----
-
-## 6. Reviewer Evaluation Guide
-
-The frontend provides an interactive verification interface for all backend requirements:
-
-### A. Authentication & RBAC
-1. Navigate to `/login` to authenticate.
-   - **Demo Accounts Card:** The login page includes a quick-fill demo card with 1-click login buttons for **Admin**, **User 1 (Alice)**, and **User 2 (Bob)** for fast evaluator testing.
-   - **User Role:** Grants access to `/notes` and `/posts`. Restricts access to administrative endpoints (redirects to `/notes`).
-   - **Admin Role:** Logs in using administrative credentials (`admin@example.com` / `AdminPassword123!`), displaying administrative navigation pills: *Admin Users*, *Admin Notes*, and *Interests Report*.
-2. Navigate to `/register` to create a new user profile with interests.
-
-### B. User Notes & Cursor Pagination
-1. Navigate to `/notes`.
-2. Create notes using the top creation form. Notice newly drafted notes prepend immediately to the top of the list without triggering a full page refetch.
-3. If more than 10 notes exist, click **"Load More Notes"**. The client issues `GET /api/notes?limit=10&after=<cursor>`, appending subsequent batches seamlessly.
-4. Click **"Edit"** to modify note content on `/notes/:id` via `PATCH /api/notes/:id`.
-5. Click **"Delete"** to remove the note via `DELETE /api/notes/:id`.
-
-### C. Admin Users & Multi-Collection Cascade Deletion
-1. Log in as an administrator and navigate to `/admin/users`.
-2. Inspect the user roster in a semantic HTML `<table>`.
-3. Provision new accounts selecting either `user` or `admin` role.
-4. Click **"Delete"** on any user row. Confirm the prompt to observe atomic multi-collection cascade deletion (`Note.deleteMany` $\rightarrow$ `Post.deleteMany` $\rightarrow$ `User.findByIdAndDelete`).
-
-### D. Admin Platform Notes & Owner Filtering
-1. Navigate to `/admin/notes`.
-2. View platform-wide notes.
-3. Paste a specific User ID into the **Filter by Note Owner** box and click **Filter**. The backend uses compound Index #3 (`{ owner: 1, _id: -1 }`) to return only that user's notes.
-4. Click **Reset Filter** to return to whole-database cursor pagination backed by the default primary key index `_id_`.
-
-### E. Scenario 1 Aggregation Report
-1. Navigate to `/reports/interests`.
-2. Visualizes the single `User.aggregate()` pipeline (`$unwind` $\rightarrow$ `$group` $\rightarrow$ `$facet`).
-3. Displays interest clusters, total user counts per interest, and associated user emails and IDs.
-4. Filter by interest string (e.g. `Tech`) using the search bar to engage multikey Index #2 (`{ interests: 1 }`).
-5. Use **Previous** and **Next** buttons to navigate through aggregated report pages.
-
-### F. Scenario 2 Aggregation & Public Posts
-1. Navigate to `/posts` as a guest or authenticated user.
-2. Read community posts with cursor-based pagination. Logged-in users can publish posts using the inline form.
-3. Click on any author's name to open their profile at `/users/:id/posts`.
-4. This page displays the user's profile card and their up to 3 most recent posts joined in a single round-trip via MongoDB 5.0+ correlated `$lookup` sub-pipeline, supported by compound Index #4 (`{ author: 1, _id: -1 }`).
-
----
-
-## 7. Security & Session Lifecycle
-
-- **Automatic Bearer Token Injection:** `src/api/client.ts` automatically attaches `Authorization: Bearer <token>` from `localStorage` to all authenticated HTTP requests.
-- **Global 401 Interceptor:** If the backend revokes or expires a JWT, the client intercepts the 401 status, purges `token` and `user` from storage, and redirects the browser to `/login`.
-- **Zero Information Leakage:** Handled 404 access-denial responses uniformly, ensuring non-owners cannot enumerate resource IDs.
+Compiles TypeScript, runs Vite asset optimization, and serves the production bundle from `dist/`.
