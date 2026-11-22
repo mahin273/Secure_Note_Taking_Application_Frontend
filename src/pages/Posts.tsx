@@ -12,7 +12,8 @@ export interface PostAuthor {
 export interface Post {
   _id: string;
   author: PostAuthor;
-  content: string;
+  title: string;
+  content?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +33,7 @@ export const Posts: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Post creation state
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [publishing, setPublishing] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
@@ -71,17 +73,17 @@ export const Posts: React.FC = () => {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!title.trim()) return;
 
     try {
       setPublishing(true);
       setPostError(null);
 
       const newPost = await api.post<Post>('/posts', {
-        content: content.trim(),
+        title: title.trim(),
+        content: content.trim() || undefined,
       });
 
-      // If backend returned post with bare author id, attach current user metadata for display
       const populatedPost: Post = {
         ...newPost,
         author:
@@ -95,6 +97,7 @@ export const Posts: React.FC = () => {
       };
 
       setPosts((prev) => [populatedPost, ...prev]);
+      setTitle('');
       setContent('');
     } catch (err: any) {
       setPostError(err.message || 'Failed to publish post');
@@ -115,13 +118,25 @@ export const Posts: React.FC = () => {
           <h4>Publish a Post</h4>
           {postError && <p className="error">{postError}</p>}
           <form onSubmit={handleCreatePost}>
+            <label htmlFor="post-title">Title</label>
+            <input
+              id="post-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Post title"
+              required
+            />
+
+            <label htmlFor="post-content">Content</label>
             <textarea
+              id="post-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What's on your mind?"
               rows={3}
-              required
             />
+
             <button type="submit" disabled={publishing}>
               {publishing ? 'Publishing...' : 'Publish Post'}
             </button>
@@ -148,9 +163,12 @@ export const Posts: React.FC = () => {
         <div>
           {posts.map((post) => (
             <div key={post._id} className="card">
-              <p style={{ margin: '0 0 10px 0', fontSize: '1.05em', whiteSpace: 'pre-wrap' }}>
-                {post.content}
-              </p>
+              <h4 style={{ margin: '0 0 6px 0' }}>{post.title}</h4>
+              {post.content && (
+                <p style={{ margin: '0 0 10px 0', fontSize: '1em', whiteSpace: 'pre-wrap' }}>
+                  {post.content}
+                </p>
+              )}
               <div style={{ fontSize: '0.85em', color: '#666', borderTop: '1px solid #eee', paddingTop: '8px' }}>
                 <span>
                   Posted by:{' '}
