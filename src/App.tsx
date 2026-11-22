@@ -7,6 +7,8 @@ import Register from './pages/Register';
 import Notes from './pages/Notes';
 import NoteEdit from './pages/NoteEdit';
 import AdminUsers from './pages/AdminUsers';
+import AdminNotes from './pages/AdminNotes';
+import InterestsReport from './pages/InterestsReport';
 
 const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -90,24 +92,8 @@ export const App: React.FC = () => {
             {/* Admin Protected Routes */}
             <Route element={<ProtectedRoute requiredRole="admin" />}>
               <Route path="/admin/users" element={<AdminUsers />} />
-              <Route
-                path="/admin/notes"
-                element={
-                  <div>
-                    <h3>Admin: All Notes</h3>
-                    <p>All notes view will be loaded here.</p>
-                  </div>
-                }
-              />
-              <Route
-                path="/reports/interests"
-                element={
-                  <div>
-                    <h3>Admin: Interests Report</h3>
-                    <p>Scenario 1 interests report will be loaded here.</p>
-                  </div>
-                }
-              />
+              <Route path="/admin/notes" element={<AdminNotes />} />
+              <Route path="/reports/interests" element={<InterestsReport />} />
             </Route>
 
             {/* 404 Route */}
