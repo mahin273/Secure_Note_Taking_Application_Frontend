@@ -6,7 +6,7 @@ A modern, responsive Single Page Application (SPA) built with React 18, TypeScri
 
 ## Live Deployment & Demo Credentials
 
-- **Live Frontend (Vercel):** *Deploying to Vercel*
+- **Live Frontend (Vercel):** [https://securenotes-seven.vercel.app](https://securenotes-seven.vercel.app)
 - **Live Backend API (Render):** [https://secure-note-taking-application-backend-3muw.onrender.com](https://secure-note-taking-application-backend-3muw.onrender.com)
 - **API Health Check:** [https://secure-note-taking-application-backend-3muw.onrender.com/api/health](https://secure-note-taking-application-backend-3muw.onrender.com/api/health)
 
