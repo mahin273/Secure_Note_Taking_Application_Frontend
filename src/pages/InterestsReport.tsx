@@ -3,6 +3,7 @@ import { api } from '../api/client';
 
 export interface InterestUser {
   _id: string;
+  name?: string;
   email: string;
 }
 
@@ -10,6 +11,14 @@ export interface InterestGroup {
   _id: string;
   count: number;
   users: InterestUser[];
+}
+
+interface ReportMeta {
+  page: number;
+  limit: number;
+  totalGroups?: number;
+  total?: number;
+  totalPages?: number;
 }
 
 interface ReportPagination {
@@ -21,7 +30,8 @@ interface ReportPagination {
 
 interface ReportResponse {
   data: InterestGroup[];
-  pagination: ReportPagination;
+  meta?: ReportMeta;
+  pagination?: ReportMeta;
 }
 
 export const InterestsReport: React.FC = () => {
@@ -51,11 +61,36 @@ export const InterestsReport: React.FC = () => {
         params.append('interest', interest.trim());
       }
 
-      const res = await api.get<ReportResponse>(`/reports/users-by-interests?${params.toString()}`);
-      setReportData(res.data);
-      setPagination(res.pagination);
+      const res = await api.get<ReportResponse | InterestGroup[]>(
+        `/reports/users-by-interests?${params.toString()}`
+      );
+
+      const groups: InterestGroup[] = Array.isArray(res)
+        ? res
+        : Array.isArray((res as any)?.data)
+        ? (res as any).data
+        : [];
+
+      const meta: ReportMeta = (res as any)?.meta || (res as any)?.pagination || {
+        page,
+        limit: 10,
+        totalGroups: groups.length,
+      };
+
+      const totalCount = meta.totalGroups ?? meta.total ?? groups.length;
+      const totalPages =
+        meta.totalPages ?? Math.max(1, Math.ceil(totalCount / (meta.limit || 10)));
+
+      setReportData(groups);
+      setPagination({
+        page: meta.page || page,
+        limit: meta.limit || 10,
+        total: totalCount,
+        totalPages,
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to generate interests report');
+      setReportData([]);
     } finally {
       setLoading(false);
     }
@@ -118,7 +153,7 @@ export const InterestsReport: React.FC = () => {
 
       {loading ? (
         <p>Generating report from database...</p>
-      ) : reportData.length === 0 ? (
+      ) : !reportData || reportData.length === 0 ? (
         <p>No interest groups found matching criteria.</p>
       ) : (
         <div>

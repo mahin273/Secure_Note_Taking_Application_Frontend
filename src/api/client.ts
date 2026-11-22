@@ -56,6 +56,10 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     } as T;
   }
 
+  if (responseData && responseData.meta !== undefined) {
+    return responseData as T;
+  }
+
   return (responseData && responseData.data !== undefined ? responseData.data : responseData) as T;
 }
 
