@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Notes from './pages/Notes';
 import NoteEdit from './pages/NoteEdit';
+import AdminUsers from './pages/AdminUsers';
 
 const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -88,15 +89,7 @@ export const App: React.FC = () => {
 
             {/* Admin Protected Routes */}
             <Route element={<ProtectedRoute requiredRole="admin" />}>
-              <Route
-                path="/admin/users"
-                element={
-                  <div>
-                    <h3>Admin: User Management</h3>
-                    <p>User management table will be loaded here.</p>
-                  </div>
-                }
-              />
+              <Route path="/admin/users" element={<AdminUsers />} />
               <Route
                 path="/admin/notes"
                 element={
