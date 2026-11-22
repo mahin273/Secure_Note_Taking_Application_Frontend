@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Notes from './pages/Notes';
+import NoteEdit from './pages/NoteEdit';
 
 const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -80,24 +82,8 @@ export const App: React.FC = () => {
 
             {/* User Protected Routes */}
             <Route element={<ProtectedRoute />}>
-              <Route
-                path="/notes"
-                element={
-                  <div>
-                    <h3>My Notes</h3>
-                    <p>Notes dashboard will be loaded here.</p>
-                  </div>
-                }
-              />
-              <Route
-                path="/notes/:id"
-                element={
-                  <div>
-                    <h3>Edit Note</h3>
-                    <p>Note editor will be loaded here.</p>
-                  </div>
-                }
-              />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/notes/:id" element={<NoteEdit />} />
             </Route>
 
             {/* Admin Protected Routes */}
