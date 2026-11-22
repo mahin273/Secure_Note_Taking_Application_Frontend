@@ -9,6 +9,8 @@ import NoteEdit from './pages/NoteEdit';
 import AdminUsers from './pages/AdminUsers';
 import AdminNotes from './pages/AdminNotes';
 import InterestsReport from './pages/InterestsReport';
+import Posts from './pages/Posts';
+import UserProfilePosts from './pages/UserProfilePosts';
 
 const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -73,15 +75,8 @@ export const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route
-              path="/posts"
-              element={
-                <div>
-                  <h3>Public Posts</h3>
-                  <p>Public posts listing will be loaded here.</p>
-                </div>
-              }
-            />
+            <Route path="/posts" element={<Posts />} />
+            <Route path="/users/:id/posts" element={<UserProfilePosts />} />
 
             {/* User Protected Routes */}
             <Route element={<ProtectedRoute />}>
