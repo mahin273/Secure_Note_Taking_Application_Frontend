@@ -167,14 +167,18 @@ export const InterestsReport: React.FC = () => {
               </div>
 
               <div style={{ marginTop: '8px' }}>
-                <p style={{ margin: '0 0 4px 0', fontSize: '0.85em', color: '#666' }}>Associated Users:</p>
-                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.9em' }}>
-                  {group.users.map((u) => (
-                    <li key={u._id}>
-                      {u.email} <span style={{ color: '#888' }}>(ID: {u._id})</span>
-                    </li>
-                  ))}
-                </ul>
+                <p style={{ margin: '0 0 4px 0', fontSize: '0.85em', color: '#666' }}>
+                  Associated Users ({group.users.length}):
+                </p>
+                <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #eee', padding: '6px 8px', borderRadius: '4px' }}>
+                  <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.9em' }}>
+                    {group.users.map((u) => (
+                      <li key={u._id}>
+                        {u.email} <span style={{ color: '#888' }}>(ID: {u._id})</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           ))}
